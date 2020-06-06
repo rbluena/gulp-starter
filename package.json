@@ -1,0 +1,37 @@
+{
+  "name": "gulp-starter",
+  "version": "1.0.0",
+  "description": "This is a starter for any simple project which using HTML and vanilla JavaScript. Mostly for experimental projects.",
+  "main": "index.js",
+  "scripts": {
+    "commit": "git-cz",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rbluena/gulp-starter.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rbluena/gulp-starter/issues"
+  },
+  "homepage": "https://github.com/rbluena/gulp-starter#readme",
+  "devDependencies": {
+    "cz-conventional-changelog": "^3.2.0",
+    "del": "^5.1.0",
+    "gulp": "^4.0.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-imagemin": "^7.1.0",
+    "gulp-sass": "^4.1.0",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-terser": "^1.2.0",
+    "node-sass": "^4.14.1"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
