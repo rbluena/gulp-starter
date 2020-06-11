@@ -1,9 +1,14 @@
 const gulp = require('gulp');
+const { series, parallel } = require('gulp');
+const plumber = require('gulp-plumber');
+const babel = require('gulp-babel');
 const sass = require('gulp-sass');
 const imagemin = require('gulp-imagemin');
 const sourcemaps = require('gulp-sourcemaps');
 const postcss = require('gulp-postcss');
-const terser = require('gulp-terser');
+const cleanCSS = require('gulp-clean-css');
+const uglify = require('gulp-uglify');
+const rename = require('gulp-rename');
 const concat = require('gulp-concat');
 const del = require('del');
 
@@ -32,7 +37,11 @@ function copyHtml(cb) {
  * Image processing
  */
 function imgTask(cb) {
-  gulp.src(imgPath).pipe(imagemin()).pipe(gulp.dest('build/assets/images'));
+  gulp
+    .src(imgPath)
+    .pipe(plumber())
+    .pipe(imagemin())
+    .pipe(gulp.dest('build/assets/images'));
   cb();
 }
 
@@ -44,29 +53,38 @@ function sassTask(cb) {
 
   gulp
     .src(scssPath)
+    .pipe(plumber())
     .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
     .pipe(postcss(processors))
-    .pipe(sourcemaps.write())
+    .pipe(concat('all.min.css'))
+    .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('build/assets/css/'));
   cb();
 }
 
+// If you would like to use babel and esnext, you need to uncomment this code.
+// and also add task to the build
 function jsTask(cb) {
   gulp
     .src(jsPath)
+    .pipe(plumber())
     .pipe(sourcemaps.init())
+    .pipe(babel())
     .pipe(concat('all.js'))
-    .pipe(terser())
-    .pipe(sourcemaps.write())
-    .pipe(gulp.dest('build/assets/js'));
+    .pipe(uglify())
+    .pipe(rename({ suffix: '.min' }))
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest('build/assets/js/'));
   cb();
 }
 
 // TODO:
 // Removing comments from js files
-// Implementing Minification for JavaScript
 // Using TypeScript for some projects
 // Implementing tests if necessary
 
-exports.build = gulp.series(clean, copyHtml, imgTask, jsTask, sassTask);
+exports.default = series(
+  clean,
+  parallel(series(copyHtml), imgTask, sassTask, jsTask)
+);
