@@ -73,6 +73,8 @@ function jsTask(cb) {
 // Removing comments from js files
 // Using TypeScript for some projects
 // Implementing tests if necessary
+// Using cache busting
+// Setting TailWind configurations for rapid building
 
 exports.default = gulp.series(
   clean,
