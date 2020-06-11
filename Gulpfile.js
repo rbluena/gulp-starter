@@ -1,19 +1,9 @@
 const gulp = require('gulp');
-const { series, parallel } = require('gulp');
-const plumber = require('gulp-plumber');
-const babel = require('gulp-babel');
-const sass = require('gulp-sass');
-const imagemin = require('gulp-imagemin');
-const sourcemaps = require('gulp-sourcemaps');
-const postcss = require('gulp-postcss');
-const cleanCSS = require('gulp-clean-css');
-const uglify = require('gulp-uglify');
-const rename = require('gulp-rename');
-const concat = require('gulp-concat');
 const del = require('del');
+const plugins = require('gulp-load-plugins')();
 
 const jsPath = 'app/assets/js/**/*.js';
-const scssPath = 'app/assets/scss/**/*.scss'; // This might be removed if framework like TailWind is used
+const scssPath = 'app/assets/scss/**/*.scss';
 const imgPath = 'app/assets/images/**/*';
 
 /**
@@ -39,8 +29,8 @@ function copyHtml(cb) {
 function imgTask(cb) {
   gulp
     .src(imgPath)
-    .pipe(plumber())
-    .pipe(imagemin())
+    .pipe(plugins.plumber())
+    .pipe(plugins.imagemin())
     .pipe(gulp.dest('build/assets/images'));
   cb();
 }
@@ -53,12 +43,12 @@ function sassTask(cb) {
 
   gulp
     .src(scssPath)
-    .pipe(plumber())
-    .pipe(sourcemaps.init())
-    .pipe(sass().on('error', sass.logError))
-    .pipe(postcss(processors))
-    .pipe(concat('all.min.css'))
-    .pipe(sourcemaps.write('.'))
+    .pipe(plugins.plumber())
+    .pipe(plugins.sourcemaps.init())
+    .pipe(plugins.sass().on('error', plugins.sass.logError))
+    .pipe(plugins.postcss(processors))
+    .pipe(plugins.concat('all.min.css'))
+    .pipe(plugins.sourcemaps.write('.'))
     .pipe(gulp.dest('build/assets/css/'));
   cb();
 }
@@ -68,13 +58,13 @@ function sassTask(cb) {
 function jsTask(cb) {
   gulp
     .src(jsPath)
-    .pipe(plumber())
-    .pipe(sourcemaps.init())
-    .pipe(babel())
-    .pipe(concat('all.js'))
-    .pipe(uglify())
-    .pipe(rename({ suffix: '.min' }))
-    .pipe(sourcemaps.write('.'))
+    .pipe(plugins.plumber())
+    .pipe(plugins.sourcemaps.init())
+    .pipe(plugins.babel())
+    .pipe(plugins.concat('all.js'))
+    .pipe(plugins.uglify())
+    .pipe(plugins.rename({ suffix: '.min' }))
+    .pipe(plugins.sourcemaps.write('.'))
     .pipe(gulp.dest('build/assets/js/'));
   cb();
 }
@@ -84,7 +74,7 @@ function jsTask(cb) {
 // Using TypeScript for some projects
 // Implementing tests if necessary
 
-exports.default = series(
+exports.default = gulp.series(
   clean,
-  parallel(series(copyHtml), imgTask, sassTask, jsTask)
+  gulp.parallel(gulp.series(copyHtml), imgTask, sassTask, jsTask)
 );
